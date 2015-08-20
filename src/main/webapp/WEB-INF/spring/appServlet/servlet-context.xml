@@ -75,4 +75,14 @@
         <beans:constructor-arg index="1" value="SIMPLE" />
     </beans:bean>
     
+    <beans:bean id="propertyConfigurer"
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <beans:property name="location">
+            <beans:value>classpath:config/jdbc.properties</beans:value>
+        </beans:property>
+        <beans:property name="fileEncoding">
+            <beans:value>UTF-8</beans:value>
+        </beans:property>
+    </beans:bean>
+    
 </beans:beans>

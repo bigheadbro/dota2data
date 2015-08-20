@@ -1,7 +1,5 @@
 package com.dota.chinanaive.controller;
 
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,7 @@ import com.dota.chinanaive.service.DataService;
  * Handles requests for the application home page.
  */
 @Controller
+@RequestMapping("/")
 public class HomeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
@@ -27,11 +26,11 @@ public class HomeController {
 	/**
 	 * Simply selects the home view to render by returning its name.
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "/")
 	public ModelAndView  home() {
 		logger.info("enter home");
 		ModelAndView mv = new ModelAndView("home");
-		MatchHistoryResult result = dataSrvc.getMatchHistory();
+		dataSrvc.insertMatchHistory();
 		return mv;
 	}
 	

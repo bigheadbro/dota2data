@@ -7,11 +7,18 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.dota.chinanaive.DAO.MatchHistoryDAO;
+import com.dota.chinanaive.entity.MatchHistory;
 import com.dota.chinanaive.entity.MatchHistoryResult;
+import com.dota.chinanaive.entity.MatchHistoryResult.Result.Match;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -31,6 +38,10 @@ public class DataService {
   /** ≈‰÷√Œƒº˛ */
   private Properties properties;
 
+  @Autowired
+  @Qualifier("mhDAO")
+  private MatchHistoryDAO mhDAO;
+  
   public DataService() {
     this(STEAM_PROPERTIES_FILENAME);
   }
@@ -130,9 +141,34 @@ public class DataService {
       return jsonStr;
   }
   
-  public MatchHistoryResult getMatchHistory() {
+  public void insertMatchHistory() {
+    long id = 1729140961;
+    while(true) {
+      try {
+        Thread.sleep(5000);
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      MatchHistoryResult result = getMatchHistory("&start_at_match_id=" + id);
+      List<Match> matches = result.getResult().getMatches();
+      System.out.println(id+":"+matches.size());
+      for(int i = 1;i<matches.size();i++) {
+        MatchHistory mh = new MatchHistory(matches.get(i));
+        
+        mhDAO.insertMatchHistory(mh);
+        id = mh.getMatch_id();
+      }
+    }
+    
+  }
+  
+  public MatchHistoryResult getMatchHistory(String param) {
     String strUrl = getProperty("getMatchHistory", null, false);
     strUrl = replaceAccessKey(strUrl);
+    if(StringUtils.isNotEmpty(param)) {
+      strUrl = strUrl + param;
+    }
     try
     {
         URL url = new URL(strUrl);

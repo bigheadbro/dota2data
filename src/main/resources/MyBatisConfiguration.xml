@@ -3,7 +3,7 @@
 <configuration>
 
     <typeAliases>
-        <typeAlias alias=MatchHistory type="com.dota.chinanaive.entity.MatchHistory" />
+        <typeAlias alias="MatchHistory" type="com.dota.chinanaive.entity.MatchHistory" />
     </typeAliases>
 
     <mappers>

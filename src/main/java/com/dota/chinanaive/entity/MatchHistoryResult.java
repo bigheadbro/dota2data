@@ -1,4 +1,8 @@
 package com.dota.chinanaive.entity;
+
+import java.util.List;
+
+
 public class MatchHistoryResult {
   private Result result;
   
@@ -14,7 +18,7 @@ public class MatchHistoryResult {
     private int num_results;
     private int total_results;
     private int results_remaining;
-    private Match[] Matches;
+    private List<Match> Matches;
   
     public int getStatus() {
       return status;
@@ -48,11 +52,11 @@ public class MatchHistoryResult {
       this.results_remaining = results_remaining;
     }
   
-    public Match[] getMatches() {
+    public List<Match> getMatches() {
       return Matches;
     }
   
-    public void setMatches(Match[] matches) {
+    public void setMatches(List<Match> matches) {
       Matches = matches;
     }
   
@@ -61,9 +65,9 @@ public class MatchHistoryResult {
       private long match_seq_num;
       private long start_time;
       private int lobby_type;
-      private long radiant_team_id;
-      private long dire_team_id;
-      private Player[] players;
+      private int radiant_team_id;
+      private int dire_team_id;
+      private List<Player> players;
   
       public long getMatch_id() {
         return match_id;
@@ -97,27 +101,27 @@ public class MatchHistoryResult {
         this.lobby_type = lobby_type;
       }
   
-      public long getRadiant_team_id() {
+      public int getRadiant_team_id() {
         return radiant_team_id;
       }
   
-      public void setRadiant_team_id(long radiant_team_id) {
+      public void setRadiant_team_id(int radiant_team_id) {
         this.radiant_team_id = radiant_team_id;
       }
   
-      public long getDire_team_id() {
+      public int getDire_team_id() {
         return dire_team_id;
       }
   
-      public void setDire_team_id(long dire_team_id) {
+      public void setDire_team_id(int dire_team_id) {
         this.dire_team_id = dire_team_id;
       }
   
-      public Player[] getPlayers() {
+      public List<Player> getPlayers() {
         return players;
       }
   
-      public void setPlayers(Player[] players) {
+      public void setPlayers(List<Player> players) {
         this.players = players;
       }
   
