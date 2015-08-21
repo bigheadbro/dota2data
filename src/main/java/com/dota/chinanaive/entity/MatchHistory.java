@@ -16,17 +16,18 @@ public class MatchHistory {
   private long match_seq_num;
   private long start_time;
   private int lobby_type;
-  private int radiant_team_id;
-  private int dire_team_id;
   private String players;
+  private boolean radiant_win;
+  private int game_mode;
 
   public MatchHistory(Match match) {
     this.match_id = match.getMatch_id();
     this.match_seq_num = match.getMatch_seq_num();
     this.start_time = match.getStart_time();
     this.lobby_type = match.getLobby_type();
-    this.radiant_team_id = match.getRadiant_team_id();
-    this.dire_team_id = match.getDire_team_id();
+    this.radiant_win = match.getRadiant_win();
+    this.setGame_mode(match.getGame_mode());
+    
     try {
       this.players = buildPlayers(match.getPlayers());
     } catch (JsonGenerationException e) {
@@ -83,27 +84,27 @@ public class MatchHistory {
     this.lobby_type = lobby_type;
   }
 
-  public int getRadiant_team_id() {
-    return radiant_team_id;
-  }
-
-  public void setRadiant_team_id(int radiant_team_id) {
-    this.radiant_team_id = radiant_team_id;
-  }
-
-  public int getDire_team_id() {
-    return dire_team_id;
-  }
-
-  public void setDire_team_id(int dire_team_id) {
-    this.dire_team_id = dire_team_id;
-  }
-
   public String getPlayers() {
     return players;
   }
 
   public void setPlayers(String players) {
     this.players = players;
+  }
+
+  public boolean isRadiant_win() {
+    return radiant_win;
+  }
+
+  public void setRadiant_win(boolean radiant_win) {
+    this.radiant_win = radiant_win;
+  }
+
+  public int getGame_mode() {
+    return game_mode;
+  }
+
+  public void setGame_mode(int game_mode) {
+    this.game_mode = game_mode;
   }
 }

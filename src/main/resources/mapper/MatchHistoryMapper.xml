@@ -9,11 +9,11 @@
       <!---->
       <id property="start_time" column="start_time"/>
       <!---->
+      <id property="game_mode" column="game_mode"/>
+      <!---->
       <id property="lobby_type" column="lobby_type"/>
       <!---->
-      <id property="radiant_team_id" column="radiant_team_id"/>
-      <!---->
-      <id property="dire_team_id" column="dire_team_id"/>
+      <id property="radiant_win" column="radiant_win"/>
       <!---->
       <id property="players" column="players"/>
     </resultMap>
@@ -24,18 +24,18 @@
           match_id
           ,match_seq_num
           ,start_time
+          ,game_mode
           ,lobby_type
-          ,radiant_team_id
-          ,dire_team_id
+          ,radiant_win
           ,players)
           values
        (
           #{match_id}
           ,#{match_seq_num}
           ,#{start_time}
+          ,#{game_mode}
           ,#{lobby_type}
-          ,#{radiant_team_id}
-          ,#{dire_team_id}
+          ,#{radiant_win}
           ,#{players}
        )
     </insert>

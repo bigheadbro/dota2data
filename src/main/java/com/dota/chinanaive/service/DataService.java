@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -135,29 +136,26 @@ public class DataService {
       }
       catch (IOException e)
       {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          System.out.println("error occured when convert stream to json");
       }
       return jsonStr;
   }
   
   public void insertMatchHistory() {
-    long id = 1729140961;
+    long id = 1373091499;
     while(true) {
-      try {
-        Thread.sleep(5000);
-      } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      MatchHistoryResult result = getMatchHistory("&start_at_match_id=" + id);
+      System.out.println("get data:"+id);
+      MatchHistoryResult result = getMatchHistory("&start_at_match_seq_num=" + id);
+      System.out.println("finish");
       List<Match> matches = result.getResult().getMatches();
       System.out.println(id+":"+matches.size());
-      for(int i = 1;i<matches.size();i++) {
+      for(int i = 0;i<matches.size();i++) {
         MatchHistory mh = new MatchHistory(matches.get(i));
-        
-        mhDAO.insertMatchHistory(mh);
-        id = mh.getMatch_id();
+        if(i != matches.size() -1) {
+          mhDAO.insertMatchHistory(mh);
+        } else {
+          id = mh.getMatch_seq_num(); 
+        }
       }
     }
     
@@ -173,24 +171,32 @@ public class DataService {
     {
         URL url = new URL(strUrl);
         HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
-
-        httpConn.setConnectTimeout(3000);
+        System.out.println("lalalala");
+        httpConn.setConnectTimeout(10000);
         httpConn.setDoInput(true);
         httpConn.setRequestMethod("GET");
+        System.out.println("send request");
 
         int respCode = httpConn.getResponseCode();
+        System.out.println("get response");
         if (respCode == 200)
         {
             String tmp = ConvertStream2Json(httpConn.getInputStream());
             ObjectMapper mapper = new ObjectMapper();
+            System.out.println("begin to read");
             MatchHistoryResult result = mapper.readValue(tmp, MatchHistoryResult.class);
+            System.out.println("finish to read");
             return result;
+        } else {
+          System.out.println("response error");
         }
+    }
+    catch (SocketTimeoutException e) {
+      System.out.println("getMatchHistory timeout");
     }
     catch (MalformedURLException e)
     {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      System.out.println("getMatchHistory exception");
     }
     catch (IOException e)
     {
@@ -199,4 +205,5 @@ public class DataService {
     }
     return null;
   }
+  
 }
