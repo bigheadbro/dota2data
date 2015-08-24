@@ -19,11 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.dota.chinanaive.DAO.HeroDAO;
 import com.dota.chinanaive.DAO.MatchHistoryDAO;
+import com.dota.chinanaive.entity.Hero;
+import com.dota.chinanaive.entity.HeroesResult;
 import com.dota.chinanaive.entity.MatchHistory;
 import com.dota.chinanaive.entity.MatchHistoryResult;
 import com.dota.chinanaive.entity.MatchHistoryResult.Result;
 import com.dota.chinanaive.entity.MatchHistoryResult.Result.Match;
+import com.dota.chinanaive.entity.MatchHistoryResult.Result.Match.Player;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -47,6 +51,10 @@ public class DataService {
 	@Qualifier("mhDAO")
 	private MatchHistoryDAO mhDAO;
 
+	@Autowired
+	@Qualifier("heroDAO")
+	private HeroDAO heroDAO;
+	
 	public DataService() {
 		this(STEAM_PROPERTIES_FILENAME);
 	}
@@ -134,7 +142,7 @@ public class DataService {
 				out.write(buffer, 0, len);
 			}
 			// 将内存流转换为字符串
-			jsonStr = new String(out.toByteArray());
+			jsonStr = out.toString("utf-8");
 		} catch (IOException e) {
 			System.out.println("error occured when convert stream to json");
 		}
@@ -246,4 +254,70 @@ public class DataService {
 		}
 	}
 
+	public void updateHeroes() {
+		for(int i = 1373083139;i<=1373092051;i++) {
+			MatchHistory mh = mhDAO.queryMatchHistoryBySeqnum(i);
+			if(mh != null) {
+				ObjectMapper mapper = new ObjectMapper();
+				try {
+					String heroes = "";
+					List<Player> players = mapper.readValue(
+							mh.getPlayers(),
+							mapper.getTypeFactory().constructCollectionType(
+	                    List.class, Player.class));
+					for(int j = 0;j<players.size();j++) {
+						if(j != players.size() - 1) {
+							heroes = heroes + players.get(j).getHero_id() + ",";
+						} else {
+							heroes = heroes + players.get(j).getHero_id();
+						}
+					}
+					mh.setHeroes(heroes);
+					mhDAO.updateMatchHistoryById(mh);
+				} catch (IOException e) {
+					System.out.println(e.toString());
+				}
+			}
+		}
+	}
+	
+	public void insertHero() {
+		try {
+			URL url = new URL("https://api.steampowered.com/IEconDOTA2_570/GetHeroes/v1/?key=76707E31AEC98FF8CAECE7E45677CD5D&language=zh");
+			HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+			httpConn.setConnectTimeout(10000);
+			httpConn.setDoInput(true);
+			httpConn.setRequestMethod("GET");
+
+			int respCode = httpConn.getResponseCode();
+
+			if (respCode == 200) {
+				String tmp = ConvertStream2Json(httpConn.getInputStream());
+				ObjectMapper mapper = new ObjectMapper();
+
+				HeroesResult result = mapper.readValue(tmp, HeroesResult.class);
+				List<HeroesResult.Result.Hero> heroes = result.getResult().getHeroes();
+				for(int i = 0;i<heroes.size();i++){
+					Hero hero = new Hero();
+					hero.setId(heroes.get(i).getId());
+					hero.setName(heroes.get(i).getName());
+					hero.setLocalized_name(heroes.get(i).getLocalized_name());
+					heroDAO.insertHero(hero);
+				}
+			} else {
+				System.out.println("response error");
+			}
+		} catch (SocketTimeoutException e) {
+			System.out.println("getMatchHistory timeout");
+		} catch (MalformedURLException e) {
+			System.out.println("getMatchHistory exception");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (Exception e) {
+			
+		}
+		
+		
+	}
 }

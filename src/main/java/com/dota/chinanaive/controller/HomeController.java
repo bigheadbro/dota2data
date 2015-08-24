@@ -34,7 +34,7 @@ public class HomeController {
 	public ModelAndView  home() {
 		logger.info("enter home");
 		ModelAndView mv = new ModelAndView("home");
-		dataSrvc.insertMatchHistory();
+		dataSrvc.insertHero();
 		return mv;
 	}
 	

@@ -4,6 +4,7 @@
 
     <typeAliases>
         <typeAlias alias="MatchHistory" type="com.dota.chinanaive.entity.MatchHistory" />
+        <typeAlias alias="Hero" type="com.dota.chinanaive.entity.Hero" />
     </typeAliases>
 
     <mappers>

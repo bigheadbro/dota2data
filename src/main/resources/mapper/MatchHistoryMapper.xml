@@ -13,11 +13,28 @@
       <!---->
       <id property="lobby_type" column="lobby_type"/>
       <!---->
-      <id property="radiant_win" column="radiant_win"/>
+      <id property="radiant_win" column="radiant_win" />
       <!---->
       <id property="players" column="players"/>
+      <!---->
+      <id property="heroes" column="heroes"/>
     </resultMap>
 
+	<select id="queryMatchHistoryBySeqnum" parameterType="int"
+			resultMap="MatchHistoryResultMap">
+		<![CDATA[
+			SELECT * from t_matchhistory t where t.match_seq_num=#{match_seq_num} 
+		]]>
+	</select>
+	
+	<update id="updateMatchHistoryById" parameterType="MatchHistory">
+		update t_matchhistory
+		<set> 
+		  <if test="heroes != null">heroes=#{heroes},</if>
+		</set>
+	   where match_seq_num=#{match_seq_num} 
+	</update>
+	
     <insert id="insertMatchHistory" parameterType="MatchHistory">
         insert into t_matchhistory
         (
@@ -35,7 +52,7 @@
           ,#{start_time}
           ,#{game_mode}
           ,#{lobby_type}
-          ,#{radiant_win}
+          ,#{isradiant_win}
           ,#{players}
        )
     </insert>

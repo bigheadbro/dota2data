@@ -15,12 +15,41 @@ public class MatchHistory {
   private long match_id;
   private long match_seq_num;
   private long start_time;
-  private int lobby_type;
-  private String players;
-  private boolean radiant_win;
   private int game_mode;
+  private int lobby_type;
+  private boolean radiant_win;
+  private String players;
+  private String heroes;
 
-  public MatchHistory(Match match) {
+	public MatchHistory(int match_id, int match_seq_num, int start_time,
+	    int game_mode, int lobby_type, boolean radiant_win, String players,
+	    String heroes) {
+		super();
+		this.match_id = match_id;
+		this.match_seq_num = match_seq_num;
+		this.start_time = start_time;
+		this.game_mode = game_mode;
+		this.lobby_type = lobby_type;
+		this.radiant_win = radiant_win;
+		this.players = players;
+		this.heroes = heroes;
+	}
+
+	public MatchHistory(Integer match_id, Integer match_seq_num, Integer start_time,
+			Integer game_mode, Integer lobby_type, Boolean radiant_win, String players,
+	    String heroes) {
+		super();
+		this.match_id = match_id;
+		this.match_seq_num = match_seq_num;
+		this.start_time = start_time;
+		this.game_mode = game_mode;
+		this.lobby_type = lobby_type;
+		this.radiant_win = radiant_win;
+		this.players = players;
+		this.heroes = heroes;
+	}
+	
+	public MatchHistory(Match match) {
     this.match_id = match.getMatch_id();
     this.match_seq_num = match.getMatch_seq_num();
     this.start_time = match.getStart_time();
@@ -107,4 +136,12 @@ public class MatchHistory {
   public void setGame_mode(int game_mode) {
     this.game_mode = game_mode;
   }
+
+	public String getHeroes() {
+		return heroes;
+	}
+
+	public void setHeroes(String heroes) {
+		this.heroes = heroes;
+	}
 }

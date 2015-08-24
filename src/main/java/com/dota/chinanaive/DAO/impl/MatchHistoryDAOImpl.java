@@ -15,4 +15,14 @@ public class MatchHistoryDAOImpl extends SqlSessionDaoSupport implements MatchHi
     return mh.getMatch_id();
   }
 
+	@Override
+	public void updateMatchHistoryById(MatchHistory mh) {
+		this.getSqlSession().update("updateMatchHistoryById", mh);
+	}
+
+	@Override
+	public MatchHistory queryMatchHistoryBySeqnum(int seqnum) {
+		return this.getSqlSession().selectOne("queryMatchHistoryBySeqnum",seqnum);
+	}
+
 }

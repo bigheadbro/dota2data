@@ -6,5 +6,7 @@ public interface MatchHistoryDAO {
 
   public long insertMatchHistory(MatchHistory mh);
 
-
+  public void updateMatchHistoryById(MatchHistory mh);
+  
+  public MatchHistory queryMatchHistoryBySeqnum(int seqnum);
 }
