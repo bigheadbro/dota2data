@@ -52,7 +52,7 @@
           ,#{start_time}
           ,#{game_mode}
           ,#{lobby_type}
-          ,#{isradiant_win}
+          ,#{radiant_win}
           ,#{players}
        )
     </insert>

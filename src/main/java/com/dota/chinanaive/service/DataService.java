@@ -1,11 +1,13 @@
 package com.dota.chinanaive.service;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -130,28 +132,30 @@ public class DataService {
 	}
 
 	protected String ConvertStream2Json(InputStream inputStream) {
-		System.out.println("in");
-		String jsonStr = "";
-		// ByteArrayOutputStream相当于内存输出流
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024];
-		int len = 0;
-		// 将输入流转移到内存输出流中
-		try {
-			while ((len = inputStream.read(buffer, 0, buffer.length)) != -1) {
-				out.write(buffer, 0, len);
-			}
-			// 将内存流转换为字符串
-			jsonStr = out.toString("utf-8");
-		} catch (IOException e) {
-			System.out.println("error occured when convert stream to json");
-		}
-		System.out.println("out");
-		return jsonStr;
-	}
+    System.out.println("in");
 
+    StringBuilder content = new StringBuilder();
+    try {
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"utf-8"));
+      String line;
+      while ((line = bufferedReader.readLine()) != null)
+      {
+        System.out.println(line);
+        content.append(line + "\n");
+      }
+      bufferedReader.close();
+    } catch (IOException e) {
+      System.out.println("error occured when convert stream to json");
+    } catch (Exception e) {
+      System.out.println("error occured when convert stream to json");
+    }
+    
+    System.out.println("out");
+    return content.toString();
+  }
+	
 	public void insertMatchHistory() {
-		long id = 1373092054;
+		long id = 1373101046;
 		while (true) {
 			System.out.println("get data:" + id);
 			MatchHistoryResult result = getMatchHistory(
@@ -184,7 +188,8 @@ public class DataService {
 			URL url = new URL(strUrl);
 			HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
 			System.out.println("lalalala");
-			httpConn.setConnectTimeout(10000);
+			httpConn.setConnectTimeout(0);
+			httpConn.setReadTimeout(0);
 			httpConn.setDoInput(true);
 			httpConn.setRequestMethod("GET");
 			System.out.println("send request");
