@@ -155,24 +155,18 @@ public class DataService {
   }
 	
 	public void insertMatchHistory() {
-		long id = 1373101046;
+		long id = 1373105770;
 		while (true) {
 			System.out.println("get data:" + id);
 			MatchHistoryResult result = getMatchHistory(
-			    "&start_at_match_seq_num=" + id + "&matches_requested=5");
+			    "&start_at_match_seq_num=" + id + "&matches_requested=1");
 		
 			System.out.println("finish");
 			if(result != null) {
   			List<Match> matches = result.getResult().getMatches();
-  			System.out.println(id + ":" + matches.size());
-  			for (int i = 0; i < matches.size(); i++) {
-  				MatchHistory mh = new MatchHistory(matches.get(i));
-  				if (i != matches.size() - 1) {
-  					mhDAO.insertMatchHistory(mh);
-  				} else {
-  					id = mh.getMatch_seq_num();
-  				}
-  			}
+				MatchHistory mh = new MatchHistory(matches.get(0));
+				mhDAO.insertMatchHistory(mh);
+				id = mh.getMatch_seq_num() + 1;
 			}
 		}
 
