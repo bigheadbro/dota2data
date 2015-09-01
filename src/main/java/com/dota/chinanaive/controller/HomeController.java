@@ -3,6 +3,9 @@ package com.dota.chinanaive.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +40,40 @@ public class HomeController {
 	public ModelAndView  home() {
 		logger.info("enter home");
 		ModelAndView mv = new ModelAndView("home");
-		List<String> first = new ArrayList<String>();
-		List<String> second = new ArrayList<String>();
-		first.add("88");//TS
-		second.add("8");//SF
-		List<HeroRecord> hrs = dataSrvc.match(true, first, second);
+
 		return mv;
 	}
 	
+	
+	@RequestMapping(value = "/result")
+  public ModelAndView  result(final HttpServletRequest request) {
+    ModelAndView mv = new ModelAndView("result");
+    String rad1 = request.getParameter("rad1");
+    String rad2 = request.getParameter("rad2");
+    String dire1 = request.getParameter("dire1");
+    String dire2 = request.getParameter("dire2");
+    
+    String aid = request.getParameter("aid");
+    
+    List<String> first = new ArrayList<String>();
+    List<String> second = new ArrayList<String>();
+    if(StringUtils.isNotEmpty(rad1)) {
+      first.add(rad1);
+    }
+    if(StringUtils.isNotEmpty(rad2)) {
+      first.add(rad2);
+    }
+    if(StringUtils.isNotEmpty(dire1)) {
+      second.add(dire1);
+    }
+    if(StringUtils.isNotEmpty(dire2)) {
+      second.add(dire2);
+    }
+    List<HeroRecord> hrs = dataSrvc.match(true, first, second);
+    List<HeroRecord> userHistory = 
+        DataConvertUtils.getHeroFreqFromMH(Long.valueOf(aid), 
+            dataSrvc.getMatchHistory("&account_id=" + aid));
+    dataSrvc.calculateScore(hrs, userHistory);
+    return mv;
+  }
 }

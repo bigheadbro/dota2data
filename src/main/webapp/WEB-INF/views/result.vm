@@ -1,0 +1,3 @@
+#set($layout = "/layout/home_layout.vm")
+#foreach($sample in $samples)
+#end

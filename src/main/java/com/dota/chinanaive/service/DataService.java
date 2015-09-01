@@ -42,18 +42,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class DataService {
 
-	/** STEAMÅäÖÃÎÄ¼ş */
+	/** STEAMï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ */
 	public final static String STEAM_PROPERTIES_FILENAME = "/steamapi.properties";
 
-	/** ÅäÖÃÎÄ¼şÂ·¾¶ */
+	/** ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Â·ï¿½ï¿½ */
 	private String propertiesPath;
 
 	private String access_key;
 
-	/** Ä¬ÈÏÅäÖÃÎÄ¼ş */
+	/** Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ */
 	private Properties defaultProperties;
 
-	/** ÅäÖÃÎÄ¼ş */
+	/** ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ */
 	private Properties properties;
 
 	@Autowired
@@ -108,14 +108,14 @@ public class DataService {
 
 	protected String getProperty(String key, String defaultValue,
 	    boolean allowNull) {
-		// Ê×ÏÈ´ÓÓÃ»§ÅäÖÃÎÄ¼ş¶ÁÈ¡£¬¶ÁÈ¡µ½ÎªNULLÊ±ÔÙ´ÓÄ¬ÈÏÅäÖÃ¶ÁÈ¡
+		// ï¿½ï¿½ï¿½È´ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ÎªNULLÊ±ï¿½Ù´ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½È¡
 		Properties pro;
 		if (properties.containsKey(key)) {
 			pro = properties;
 		} else {
 			pro = defaultProperties;
 		}
-		// ¶ÁÈ¡ÅäÖÃÖµ
+		// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Öµ
 		String value = pro.getProperty(key);
 		if (value == null) {
 			value = defaultValue;
@@ -123,7 +123,7 @@ public class DataService {
 		if (value == null) {
 			if (!allowNull) {
 				throw new RuntimeException(
-				    "ÅäÖÃÎÄ¼ş£¨" + propertiesPath + "£©È±ÉÙÊôĞÔ£ºkey=" + key);
+				    "ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½" + propertiesPath + "ï¿½ï¿½È±ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½key=" + key);
 			}
 			return null;
 		}
@@ -300,6 +300,14 @@ public class DataService {
 	    }
 	  }
 	  return true;
+	}
+	
+	public List<Integer> calculateScore(List<HeroRecord> matchList, List<HeroRecord> userList) {
+	  Map<Double, Integer> scoreMap = new HashMap<Double, Integer>();
+	  for(int i = 0;i<userList.size();i++) {
+	    
+	  }
+	  return null;
 	}
 	
 	public void getMatchHistoryToFile(long param) {

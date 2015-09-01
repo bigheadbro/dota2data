@@ -1,2 +1,42 @@
 #set($layout = "/layout/home_layout.vm")
-哈哈哈哈
+<style>
+    .input{margin:10px}
+    /* Clear Fix */ 
+    .clearfix:after { content:"."; display:block; height:0; clear:both; visibility:hidden; } 
+    .clearfix { display:inline-block; } 
+    /* Hide from IE Mac */ 
+    .clearfix {display:block;} 
+    .left{float:left;width:350px;}
+    .right{float:left;width:350px;}
+</style>
+<form action="/result">
+    <div>
+        <h1>Steam id</h1>
+        <div class="input">
+            <input type="text" name="aid" />
+        </div>
+    </div>
+    <div class="clearfix">
+        <div class="left">
+            <h1>radiant pick</h1>
+            <div class="input">
+                <input type="text" name="rad1" />
+            </div>
+            <div class="input">
+                <input type="text" name="rad2" />
+            </div>
+        </div>
+        <div class="right">
+            <h1>dire pick</h1>
+            <div class="input">
+                <input type="text" name="dire1" />
+            </div>
+            <div class="input">
+                <input type="text" name="dire2" />
+            </div>
+        </div>
+    </div>
+    <div class="">
+        <input type="submit" value="我要赢！！！" />
+    </div>
+</form>
