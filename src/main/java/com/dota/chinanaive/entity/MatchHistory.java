@@ -35,6 +35,12 @@ public class MatchHistory {
 		this.heroes = heroes;
 	}
 
+	public MatchHistory(Integer radiant_win, String heroes) {
+    super();
+    this.radiant_win = (radiant_win>0);
+    this.heroes = heroes;
+  }
+	
 	public MatchHistory(Integer match_id, Integer match_seq_num, Integer start_time,
 			Integer game_mode, Integer lobby_type, Boolean radiant_win, String players,
 	    String heroes) {

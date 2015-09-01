@@ -13,8 +13,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +30,7 @@ import org.springframework.stereotype.Service;
 import com.dota.chinanaive.DAO.HeroDAO;
 import com.dota.chinanaive.DAO.MatchHistoryDAO;
 import com.dota.chinanaive.entity.Hero;
+import com.dota.chinanaive.entity.HeroRecord;
 import com.dota.chinanaive.entity.HeroesResult;
 import com.dota.chinanaive.entity.MatchHistory;
 import com.dota.chinanaive.entity.MatchHistoryResult;
@@ -140,7 +147,6 @@ public class DataService {
       String line;
       while ((line = bufferedReader.readLine()) != null)
       {
-        System.out.println(line);
         content.append(line + "\n");
       }
       bufferedReader.close();
@@ -153,67 +159,149 @@ public class DataService {
     System.out.println("out");
     return content.toString();
   }
+
+	public List<Match> getMatchHistory(String param) {
+	  int remaining = 1;
+	  List<Match> matches = new ArrayList<Match>();
+	  String matchid = "";
+	  while(remaining > 0) { 
+  		String strUrl = getProperty("getUserMatchHistory", null, false);
+  		strUrl = replaceAccessKey(strUrl);
+  		if (StringUtils.isNotEmpty(param)) {
+  			strUrl = strUrl + param;
+  		}
+  		if (StringUtils.isNotEmpty(matchid)) {
+        strUrl = strUrl + matchid;
+      }
+  		try {
+  			URL url = new URL(strUrl);
+  			HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+  
+  			httpConn.setConnectTimeout(0);
+  			httpConn.setReadTimeout(0);
+  			httpConn.setDoInput(true);
+  			httpConn.setRequestMethod("GET");
+  
+  			int respCode = httpConn.getResponseCode();
+  			System.out.println("get response");
+  			if (respCode == 200) {
+  				String tmp = ConvertStream2Json(httpConn.getInputStream());
+  				ObjectMapper mapper = new ObjectMapper();
+  				System.out.println("begin to read");
+  				MatchHistoryResult result = mapper.readValue(tmp,
+  				    MatchHistoryResult.class);
+  				matches.addAll(result.getResult().getMatches());
+  				System.out.println("finish to read");
+  				remaining = result.getResult().getResults_remaining();
+  				if(remaining > 0) {
+  				  int size = result.getResult().getMatches().size() - 1;
+  				  matchid = "&start_at_match_id=" + String.valueOf(
+  				      result.getResult().getMatches().get(size).getMatch_id() - 1);
+  				}
+  			} else {
+  				System.out.println("response error");
+  			}
+  		} catch (SocketTimeoutException e) {
+  			System.out.println("getMatchHistory timeout");
+  		} catch (MalformedURLException e) {
+  			System.out.println("getMatchHistory exception");
+  		} catch (IOException e) {
+  			// TODO Auto-generated catch block
+  			e.printStackTrace();
+  		}catch (Exception e) {
+  			
+  		}
+	  }
+	  return matches;
+	}
+
+	public List<HeroRecord> match(boolean isRadiant, List<String> first,List<String> second) {
+	  List<MatchHistory> matches = mhDAO.queryMatchHistoryByLobbyType(7);
+	  Map<Integer, HeroRecord> hrMap = new HashMap<Integer, HeroRecord>();
+	  
+	  for(int i = 0; i< matches.size(); i++) {
+	    MatchHistory match = matches.get(i);
+	    String radiant = match.getHeroes().split("[|]")[0];
+	    String dire = match.getHeroes().split("[|]")[1];
+	    List<String> radiantHero = new ArrayList<String>(Arrays.asList(radiant.split(",")));
+      List<String> direHero = new ArrayList<String>(Arrays.asList(dire.split(",")));
+      if(isInTheList(first,radiantHero) && isInTheList(second,direHero))
+      {
+        if(isRadiant) {//radiant pick
+          radiantHero.removeAll(first);
+          for(int j = 0; j < radiantHero.size();j++) {
+            int heroid = Integer.valueOf(radiantHero.get(j));
+            HeroRecord hr = hrMap.get(heroid);
+            if(hr == null) {
+              hr = new HeroRecord();
+              hr.setHeroid(heroid);
+              if(match.isRadiant_win()) {
+                hr.setUseCount(1);
+                hr.setWinCount(1);
+              } else {
+                hr.setUseCount(1);
+              }
+              hrMap.put(heroid, hr);
+            } else {
+              if(match.isRadiant_win()) {
+                hr.setWinCount(hr.getWinCount() + 1);
+                hr.setUseCount(hr.getUseCount() + 1);
+              } else {
+                hr.setUseCount(hr.getUseCount() + 1);
+              }
+            }
+          }
+        } else {
+          direHero.removeAll(second);
+          for(int j = 0; j < direHero.size();j++) {
+            int heroid = Integer.valueOf(direHero.get(j));
+            HeroRecord hr = hrMap.get(heroid);
+            if(hr == null) {
+              hr = new HeroRecord();
+              hr.setHeroid(heroid);
+              if(match.isRadiant_win()) {
+                hr.setUseCount(1);
+              } else {
+                hr.setUseCount(1);
+                hr.setWinCount(1);
+              }
+              hrMap.put(heroid, hr);
+            } else {
+              if(match.isRadiant_win()) {
+                hr.setUseCount(hr.getUseCount() + 1);
+              } else {
+                hr.setUseCount(hr.getUseCount() + 1);
+                hr.setWinCount(hr.getWinCount() + 1);
+              }
+            }
+          }
+        }
+      }
+	  }
+	  
+	  Map<Integer, HeroRecord> treeMap = new TreeMap<Integer, HeroRecord>(
+      new Comparator<Integer>() {
+
+      @Override
+      public int compare(Integer o1, Integer o2) {
+        return o1.compareTo(o2);
+      }
+
+    });
+    treeMap.putAll(hrMap);
+    List<HeroRecord> list = new ArrayList<HeroRecord>(treeMap.values());
+    return list;
+	}
 	
-	public void insertMatchHistory() {
-		long id = 1373105770;
-		while (true) {
-			System.out.println("get data:" + id);
-			MatchHistoryResult result = getMatchHistory(
-			    "&start_at_match_seq_num=" + id + "&matches_requested=1");
-		
-			System.out.println("finish");
-			if(result != null) {
-  			List<Match> matches = result.getResult().getMatches();
-				MatchHistory mh = new MatchHistory(matches.get(0));
-				mhDAO.insertMatchHistory(mh);
-				id = mh.getMatch_seq_num() + 1;
-			}
-		}
-
+	private boolean isInTheList(List<String> in, List<String> out) {
+	  for(int i = 0; i < in.size(); i++) {
+	    if(!out.contains(in.get(i))) {
+	      return false;
+	    }
+	  }
+	  return true;
 	}
-
-	public MatchHistoryResult getMatchHistory(String param) {
-		String strUrl = getProperty("getMatchHistory", null, false);
-		strUrl = replaceAccessKey(strUrl);
-		if (StringUtils.isNotEmpty(param)) {
-			strUrl = strUrl + param;
-		}
-		try {
-			URL url = new URL(strUrl);
-			HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-			System.out.println("lalalala");
-			httpConn.setConnectTimeout(0);
-			httpConn.setReadTimeout(0);
-			httpConn.setDoInput(true);
-			httpConn.setRequestMethod("GET");
-			System.out.println("send request");
-
-			int respCode = httpConn.getResponseCode();
-			System.out.println("get response");
-			if (respCode == 200) {
-				String tmp = ConvertStream2Json(httpConn.getInputStream());
-				ObjectMapper mapper = new ObjectMapper();
-				System.out.println("begin to read");
-				MatchHistoryResult result = mapper.readValue(tmp,
-				    MatchHistoryResult.class);
-				System.out.println("finish to read");
-				return result;
-			} else {
-				System.out.println("response error");
-			}
-		} catch (SocketTimeoutException e) {
-			System.out.println("getMatchHistory timeout");
-		} catch (MalformedURLException e) {
-			System.out.println("getMatchHistory exception");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (Exception e) {
-			
-		}
-		return null;
-	}
-
+	
 	public void getMatchHistoryToFile(long param) {
 		String strUrl = getProperty("getMatchHistory", null, false);
 		strUrl = replaceAccessKey(strUrl);
@@ -300,7 +388,7 @@ public class DataService {
 					Hero hero = new Hero();
 					hero.setId(heroes.get(i).getId());
 					hero.setName(heroes.get(i).getName());
-					hero.setLocalized_name(heroes.get(i).getLocalized_name());
+					hero.setName_ch(heroes.get(i).getLocalized_name());
 					heroDAO.insertHero(hero);
 				}
 			} else {

@@ -1,5 +1,7 @@
 package com.dota.chinanaive.DAO;
 
+import java.util.List;
+
 import com.dota.chinanaive.entity.MatchHistory;
 
 public interface MatchHistoryDAO {
@@ -9,4 +11,6 @@ public interface MatchHistoryDAO {
   public void updateMatchHistoryById(MatchHistory mh);
   
   public MatchHistory queryMatchHistoryBySeqnum(int seqnum);
+  
+  public List<MatchHistory> queryMatchHistoryByLobbyType(int type);
 }

@@ -1,5 +1,7 @@
 package com.dota.chinanaive.DAO.impl;
 
+import java.util.List;
+
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.springframework.stereotype.Repository;
 
@@ -24,5 +26,10 @@ public class MatchHistoryDAOImpl extends SqlSessionDaoSupport implements MatchHi
 	public MatchHistory queryMatchHistoryBySeqnum(int seqnum) {
 		return this.getSqlSession().selectOne("queryMatchHistoryBySeqnum",seqnum);
 	}
+	
+	@Override
+  public List<MatchHistory> queryMatchHistoryByLobbyType(int type) {
+    return this.getSqlSession().selectList("queryMatchHistoryByLobbyType",type);
+  }
 
 }

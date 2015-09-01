@@ -1,119 +1,62 @@
 package com.dota.chinanaive.utils;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import com.dota.chinanaive.DAO.MatchHistoryDAO;
-import com.dota.chinanaive.entity.MatchHistory;
-import com.dota.chinanaive.entity.MatchHistoryResult;
-import com.dota.chinanaive.entity.MatchHistoryResult.Result.Match;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class StringUtil {
-  @Autowired
   public static void main(String[] args) {
-    long id = 1373094316;
-    while (true) {
-      System.out.println("get data:" + id);
-      String strUrl = "https://api.steampowered.com/IDOTA2Match_570/GetMatchHistoryBySequenceNum/v1/?key=76707E31AEC98FF8CAECE7E45677CD5D&start_at_match_seq_num="
-          + id + "&matches_requested=5";
-
-      try {
-        URL url = new URL(strUrl);
-        HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-        System.out.println("lalalala");
-        httpConn.setConnectTimeout(10000);
-        httpConn.setDoInput(true);
-        httpConn.setRequestMethod("GET");
-        System.out.println("send request");
-
-        int respCode = httpConn.getResponseCode();
-        System.out.println("get response");
-        if (respCode == 200) {
-          System.out.println("in");
-          //String jsonStr = "";
-          StringBuilder content = new StringBuilder();
-          System.out.println("111");
-          
-          try {
-            System.out.println("333");
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
-
-            String line;
-
-            while ((line = bufferedReader.readLine()) != null)
-            {
-              content.append(line + "\n");
-            }
-            bufferedReader.close();
-            System.out.println("444");
-
-          } catch (IOException e) {
-            System.out.println("error occured when convert stream to json");
-          } 
-          
-          System.out.println("out");
-          ObjectMapper mapper = new ObjectMapper();
-          System.out.println("begin to read");
-          MatchHistoryResult result = mapper.readValue(content.toString(),
-              MatchHistoryResult.class);
-          if (result != null) {
-            List<Match> matches = result.getResult().getMatches();
-            System.out.println(id + ":" + matches.size());
-            for (int i = 0; i < matches.size(); i++) {
-              MatchHistory mh = new MatchHistory(matches.get(i));
-              if (i != matches.size() - 1) {
-                try {
-                  Connection connection = java.sql.DriverManager
-                      .getConnection(
-                          "jdbc:mysql://127.0.0.1/dota2data?useUnicode=true&amp;characterEncoding=utf-8",
-                          "root", "123123");
-                  ResultSet ret = connection.createStatement().executeQuery(
-                      "select * from t_matchhistory limit 1");
-                  ResultSetMetaData meta = ret.getMetaData();
-                  int count = meta.getColumnCount();
-                  System.out.println(count);
-                } catch (SQLException e) {
-                  e.printStackTrace();
-                }
-              } else {
-                id = mh.getMatch_seq_num();
-              }
-            }
-          }
-          System.out.println("finish to read");
-        } else {
-          System.out.println("response error");
-        }
-        System.out.println("finish");
-
-      } catch (SocketTimeoutException e) {
-        System.out.println("getMatchHistory timeout");
-      } catch (MalformedURLException e) {
-        System.out.println("getMatchHistory exception");
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
+    /*Runnable match1 = new MatchUtil(1401015988,1402000000);
+    Thread thread1 = new Thread(match1);
+    thread1.setName("match141");
+    System.out.println("Starting match141 thread...");
+    thread1.start();
+    
+    Runnable match2 = new MatchUtil(1402023941,1403000000);
+    Thread thread2 = new Thread(match2);
+    thread2.setName("match142");
+    System.out.println("Starting match142 thread...");
+    thread2.start();
+    
+    Runnable match3 = new MatchUtil(1403020475,1404000000);
+    Thread thread3 = new Thread(match3);
+    thread3.setName("match143");
+    System.out.println("Starting match143 thread...");
+    thread3.start();
+    
+    Runnable match4 = new MatchUtil(1404014720,1405000000);
+    Thread thread4 = new Thread(match4);
+    thread4.setName("match144");
+    System.out.println("Starting match144 thread...");
+    thread4.start();
+    
+    Runnable match5 = new MatchUtil(1405013065,1406000000);
+    Thread thread5 = new Thread(match5);
+    thread5.setName("match145");
+    System.out.println("Starting match145 thread...");
+    thread5.start();
+    
+    Runnable match6 = new MatchUtil(1406024385,1407000000);
+    Thread thread6 = new Thread(match6);
+    thread6.setName("match146");
+    System.out.println("Starting match146 thread...");
+    thread6.start();
+    
+    Runnable match7 = new MatchUtil(1407020606,1408000000);
+    Thread thread7 = new Thread(match7);
+    thread7.setName("match147");
+    System.out.println("Starting match147 thread...");
+    thread7.start();
+    
+    Runnable match8 = new MatchUtil(1408013394,1409000000);
+    Thread thread8 = new Thread(match8);
+    thread8.setName("match148");
+    System.out.println("Starting match148 thread...");
+    thread8.start();
+    
+    Runnable match9 = new MatchUtil(1409006513,1410000000);
+    Thread thread9 = new Thread(match9);
+    thread9.setName("match149");
+    System.out.println("Starting match149 thread...");
+    thread9.start();*/
+    
+    
   }
 
 }
