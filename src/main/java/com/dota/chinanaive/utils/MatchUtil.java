@@ -97,11 +97,16 @@ public class MatchUtil implements Runnable {
                   heroMap.getTypeFactory().constructCollectionType(
                           List.class, Player.class));
               for(int j = 0;j<players.size();j++) {
-                if(j != players.size() - 1) {
+              	if(j == 4) {
+              		heroes = heroes + players.get(j).getHero_id() + "|";
+              	} else if(j != players.size() - 1) {
                   heroes = heroes + players.get(j).getHero_id() + ",";
                 } else {
                   heroes = heroes + players.get(j).getHero_id();
                 }
+              }
+              if(heroes.split(",").length == 2) {
+              	heroes = heroes.replace(',', '|');
               }
               stmt.setString(8, heroes);
               

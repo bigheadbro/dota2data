@@ -1,3 +1,36 @@
 #set($layout = "/layout/home_layout.vm")
-#foreach($sample in $samples)
+<style>
+    .input{margin:10px}
+    /* Clear Fix */ 
+    .clearfix:after { content:"."; display:block; height:0; clear:both; visibility:hidden; } 
+    .clearfix { display:inline-block; } 
+    /* Hide from IE Mac */ 
+    .clearfix {display:block;} 
+    .left{float:left;width:350px;}
+    .right{float:left;width:350px;}
+</style>
+<h1>已选英雄</h1>
+<div class="clearfix">
+    <div class="left">
+        <h1>radiant pick</h1>
+        <div class="input">
+            $rad1
+        </div>
+        <div class="input">
+            $!rad2
+        </div>
+    </div>
+    <div class="right">
+        <h1>dire pick</h1>
+        <div class="input">
+            $dire1
+        </div>
+        <div class="input">
+            $dire2
+        </div>
+    </div>
+</div>
+<h1>推荐英雄排序</h1>
+#foreach($hero in $heroes)
+	<p>$hero</p>
 #end

@@ -35,9 +35,9 @@ public class MatchHistory {
 		this.heroes = heroes;
 	}
 
-	public MatchHistory(Integer radiant_win, String heroes) {
+	public MatchHistory(Boolean radiant_win, String heroes) {
     super();
-    this.radiant_win = (radiant_win>0);
+    this.radiant_win = radiant_win;
     this.heroes = heroes;
   }
 	

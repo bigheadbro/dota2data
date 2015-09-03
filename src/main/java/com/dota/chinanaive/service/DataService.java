@@ -42,20 +42,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class DataService {
 
-	/** STEAM�����ļ� */
 	public final static String STEAM_PROPERTIES_FILENAME = "/steamapi.properties";
 
-	/** �����ļ�·�� */
 	private String propertiesPath;
 
 	private String access_key;
 
-	/** Ĭ�������ļ� */
 	private Properties defaultProperties;
 
-	/** �����ļ� */
 	private Properties properties;
 
+	private static double WIN_RATIO_WEIGHT = 0.8;
+	private static double USE_RATIO_WEIGHT = 1.2;
+	
 	@Autowired
 	@Qualifier("mhDAO")
 	private MatchHistoryDAO mhDAO;
@@ -215,7 +214,7 @@ public class DataService {
 	  return matches;
 	}
 
-	public List<HeroRecord> match(boolean isRadiant, List<String> first,List<String> second) {
+	public Map<Integer, HeroRecord> match(boolean isRadiant, List<String> first,List<String> second) {
 	  List<MatchHistory> matches = mhDAO.queryMatchHistoryByLobbyType(7);
 	  Map<Integer, HeroRecord> hrMap = new HashMap<Integer, HeroRecord>();
 	  
@@ -279,18 +278,7 @@ public class DataService {
       }
 	  }
 	  
-	  Map<Integer, HeroRecord> treeMap = new TreeMap<Integer, HeroRecord>(
-      new Comparator<Integer>() {
-
-      @Override
-      public int compare(Integer o1, Integer o2) {
-        return o1.compareTo(o2);
-      }
-
-    });
-    treeMap.putAll(hrMap);
-    List<HeroRecord> list = new ArrayList<HeroRecord>(treeMap.values());
-    return list;
+    return hrMap;
 	}
 	
 	private boolean isInTheList(List<String> in, List<String> out) {
@@ -302,12 +290,59 @@ public class DataService {
 	  return true;
 	}
 	
-	public List<Integer> calculateScore(List<HeroRecord> matchList, List<HeroRecord> userList) {
+	public List<String> calculateScore(Map<Integer, HeroRecord> matchMap, Map<Integer, HeroRecord> userMap) {
 	  Map<Double, Integer> scoreMap = new HashMap<Double, Integer>();
-	  for(int i = 0;i<userList.size();i++) {
-	    
-	  }
-	  return null;
+	  for (Map.Entry<Integer, HeroRecord> entry : userMap.entrySet()) {  
+	    HeroRecord hrMatch = matchMap.get(entry.getKey());
+	    HeroRecord hrUser = entry.getValue();
+	    if(hrMatch != null)
+	    {
+  	  	Double score = scoreMethod(Double.valueOf(hrMatch.getWinCount())/hrMatch.getUseCount(), Double.valueOf(hrMatch.getUseCount())/matchMap.size(),
+  	  			Double.valueOf(hrUser.getWinCount())/hrUser.getUseCount(), Double.valueOf(hrUser.getUseCount())/userMap.size());
+  	  	
+  	  	scoreMap.put(score, entry.getKey());
+	    }
+	  }  
+	  Map<Double, Integer> treeMap = new TreeMap<Double, Integer>(
+      new Comparator<Double>() {
+
+      @Override
+      public int compare(Double o1, Double o2) {
+        return o1.compareTo(o2);
+      }
+
+    });
+    treeMap.putAll(scoreMap);
+    List<Integer> list = new ArrayList<Integer>(treeMap.values());
+    List<Hero> heroes = heroDAO.getHeroes();
+    List<String> heroNameList = new ArrayList<String>();
+    for(int i = 0; i< list.size();i++) {
+    	int heroid = list.get(i);
+    	for(int j = 0;j< heroes.size();j++){
+    		if(heroes.get(j).getId()==heroid){
+    			heroNameList.add(heroes.get(j).getName_ch());
+    			break;
+    		}
+    	}
+    }
+	  return heroNameList;
+	}
+	
+	public double scoreMethod(double matchWinRatio, double matchUseFeq, double userWinRatio, double userUseFeq) {
+		return (matchWinRatio*WIN_RATIO_WEIGHT)*(matchWinRatio*WIN_RATIO_WEIGHT) 
+				+ (matchUseFeq*USE_RATIO_WEIGHT)*(matchUseFeq*USE_RATIO_WEIGHT) 
+				+ userWinRatio 
+				+ userUseFeq;
+	}
+	
+	public String getHeroNameCh(int id) {
+		List<Hero> heroes = heroDAO.getHeroes();
+		for(int j = 0;j< heroes.size();j++){
+  		if(heroes.get(j).getId()==id){
+  			return heroes.get(j).getName_ch();
+  		}
+  	}
+		return heroes.get(id).getName_ch();
 	}
 	
 	public void getMatchHistoryToFile(long param) {

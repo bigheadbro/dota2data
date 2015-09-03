@@ -20,7 +20,7 @@ public class DataConvertUtils {
     return false;
   }
   
-  public  static List<HeroRecord> getHeroFreqFromMH(long aid, List<Match> matches) {
+  public  static Map<Integer, HeroRecord> getHeroFreqFromMH(long aid, List<Match> matches) {
     Map<Integer, HeroRecord> hrMap = new HashMap<Integer, HeroRecord>();
     for(int i = 0; i < matches.size(); i++) {
       Match match = matches.get(i);
@@ -60,18 +60,8 @@ public class DataConvertUtils {
         }
       }
     }
-    Map<Integer, HeroRecord> treeMap = new TreeMap<Integer, HeroRecord>(
-      new Comparator<Integer>() {
 
-      @Override
-      public int compare(Integer o1, Integer o2) {
-        return o1.compareTo(o2);
-      }
-
-    });
-    treeMap.putAll(hrMap);
-    List<HeroRecord> list = new ArrayList<HeroRecord>(treeMap.values());
-    return list;
+    return hrMap;
   }
 
 }

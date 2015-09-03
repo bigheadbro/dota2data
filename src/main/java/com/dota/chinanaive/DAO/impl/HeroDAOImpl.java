@@ -1,5 +1,7 @@
 package com.dota.chinanaive.DAO.impl;
 
+import java.util.List;
+
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +15,11 @@ public class HeroDAOImpl extends SqlSessionDaoSupport implements HeroDAO {
 	public int insertHero(Hero hero) {
 		this.getSqlSession().insert("insertHero", hero);
     return hero.getId();
+	}
+
+	@Override
+	public List<Hero> getHeroes() {
+		return this.getSqlSession().selectList("queryHeroes");
 	}
 
 }

@@ -2,6 +2,7 @@ package com.dota.chinanaive.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,21 +60,27 @@ public class HomeController {
     List<String> second = new ArrayList<String>();
     if(StringUtils.isNotEmpty(rad1)) {
       first.add(rad1);
+      mv.addObject("rad1",dataSrvc.getHeroNameCh(Integer.valueOf(rad1)));
     }
     if(StringUtils.isNotEmpty(rad2)) {
       first.add(rad2);
+      mv.addObject("rad2",dataSrvc.getHeroNameCh(Integer.valueOf(rad2)));
     }
     if(StringUtils.isNotEmpty(dire1)) {
       second.add(dire1);
+      mv.addObject("dire1",dataSrvc.getHeroNameCh(Integer.valueOf(dire1)));
     }
     if(StringUtils.isNotEmpty(dire2)) {
       second.add(dire2);
+      mv.addObject("dire2",dataSrvc.getHeroNameCh(Integer.valueOf(dire2)));
     }
-    List<HeroRecord> hrs = dataSrvc.match(true, first, second);
-    List<HeroRecord> userHistory = 
+    Map<Integer, HeroRecord> hrs = dataSrvc.match(true, first, second);
+    Map<Integer, HeroRecord> userHistory = 
         DataConvertUtils.getHeroFreqFromMH(Long.valueOf(aid), 
             dataSrvc.getMatchHistory("&account_id=" + aid));
-    dataSrvc.calculateScore(hrs, userHistory);
+    List<String> heroes = dataSrvc.calculateScore(hrs, userHistory);
+    mv.addObject("heroes", heroes);
+
     return mv;
   }
 }
